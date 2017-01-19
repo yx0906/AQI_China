@@ -63,3 +63,7 @@ def add_aqi(date_aqi, avgAQI, minAQI, maxAQI, severitylevel, pm2_5, pm10, so2,
     except Exception as E:
         logger.error("{}. \n {}".format(E, [date_aqi, avgAQI, minAQI, maxAQI,
                                             severitylevel, pm2_5, pm10, so2, co, no2, o3, ranking, city]))
+
+@db_session
+def get_city(city=''):
+    return City.get(ch_name=city)

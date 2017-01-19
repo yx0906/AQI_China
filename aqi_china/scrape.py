@@ -4,7 +4,7 @@
 import requests
 from bs4 import BeautifulSoup
 import logging
-from .data import City, add_aqi
+from .data import City, add_aqi, get_city
 
 
 logger = logging.getLogger(__name__)
@@ -53,7 +53,7 @@ def scrape_aqi(city='', month=''):
                 if len(values) == len(AQI_SCHEMA_LIST):
                     dict_aqi = dict(zip(AQI_SCHEMA_LIST, values))
                     dict_aqi = proc_range(dict_aqi)
-                    dict_aqi['city'] = City.get(ch_name=city)
+                    dict_aqi['city'] = get_city(city)
                     add_aqi(**dict_aqi)
                 else:
                     logger.error(
