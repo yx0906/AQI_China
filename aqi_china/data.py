@@ -9,6 +9,14 @@ import logging
 logger = logging.getLogger(__name__)
 db = Database()
 
+class City(db.Entity):
+
+    id = PrimaryKey(int, auto=True)
+    ch_name = Required(str)
+    en_name = Optional(str)
+    province = Optional(str)
+    coordinates = Optional(str)
+    a_q_is = Set('AQI')
 
 class AQI(db.Entity):
 
@@ -25,18 +33,7 @@ class AQI(db.Entity):
     no2 = Required(float)
     o3 = Required(float)
     ranking = Required(int)
-    city = Required('City')
-
-
-class City(db.Entity):
-
-    id = PrimaryKey(int, auto=True)
-    ch_name = Required(str)
-    en_name = Optional(str)
-    province = Optional(str)
-    coordinates = Optional(str)
-    a_q_is = Set(AQI)
-
+    city = Required(City)
 
 db.bind("sqlite", 'database_aqi.sqlite', create_db=True)
 db.generate_mapping(create_tables=True)
@@ -44,6 +41,7 @@ db.generate_mapping(create_tables=True)
 
 @db_session
 def add_city(ch_name, en_name='', province='', coordinates=''):
+
     try:
         City(ch_name=ch_name, en_name=en_name,
              province=province, coordinates=coordinates)
@@ -66,4 +64,4 @@ def add_aqi(date_aqi, avgAQI, minAQI, maxAQI, severitylevel, pm2_5, pm10, so2,
 
 @db_session
 def get_city(city=''):
-    return City.get(ch_name=city)
+    return City.get(ch_name=city).id
