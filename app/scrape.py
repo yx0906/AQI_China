@@ -55,6 +55,7 @@ def scrape_aqi(city='', month=''):
                     dict_aqi = proc_range(dict_aqi)
                     dict_aqi['city'] = get_city(city)
                     add_aqi(**dict_aqi)
+                    logger.debug("Entry for {} added.".format(payload))
                 else:
                     logger.error(
                         "{} can't map to AQI_SCHEMA_LIST".format(values))
@@ -64,7 +65,3 @@ def scrape_aqi(city='', month=''):
 
     else:
         logger.error("Table not found! City:{}, Month:{}.".format(city, month))
-
-
-def test():
-    scrape_aqi('上海', '2013-12')

@@ -62,15 +62,13 @@ def gen_year_month():
 
     return result
 
+def collect_one_city(city):
+
+    for month in gen_year_month():
+        scrape_aqi(city=city, month=month)
+
 
 def collect_all():
 
     for city in dbcity_init():
-        for month in gen_year_month():
-            scrape_aqi(city=city, month=month)
-            time.sleep(0.1)
-
-
-if __name__ == '__main__':
-
-    collect_all()
+        collect_one_city(city)
