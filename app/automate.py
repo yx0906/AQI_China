@@ -3,7 +3,7 @@
 
 import logging
 from .data import add_city
-from .scrape import scrape_aqi
+from .scrape import scrape_aqi, scrape_aqi_new
 import time
 
 
@@ -44,6 +44,7 @@ def dbcity_init():
     延安  盐城  阳江  阳泉  扬州  烟台  宜宾  宜昌  银川  营口 义乌  宜兴  岳阳  云浮  玉溪
     枣庄  张家港  张家界  张家口  章丘  湛江  肇庆  招远  郑州  镇江 中山  舟山  珠海  诸暨  株洲  淄博  自贡  遵义
     """
+
     list_city = cities.split()
     for c in list_city:
         add_city(c)
@@ -67,6 +68,10 @@ def collect_one_city(city):
     for month in gen_year_month():
         scrape_aqi(city=city, month=month)
 
+def collect_one_city_new(city):
+
+    scrape_aqi_new(city, gen_year_month())
+    
 
 def collect_all():
 

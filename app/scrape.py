@@ -1,11 +1,10 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*- #
 
-import requests
-from bs4 import BeautifulSoup
 import logging
-from .data import City, add_aqi, get_city
-
+from bs4 import BeautifulSoup
+import requests
+from .data import add_aqi, get_city
 
 logger = logging.getLogger(__name__)
 ORIG_AQI_SCHEMA_LIST = ['日期', 'AQI', '范围', '质量等级',
@@ -43,7 +42,6 @@ def scrape_aqi(city='', month=''):
     payload = {'city': city, 'month': month}
     page = requests.get(url, params=payload)
     soup = BeautifulSoup(page.text, 'lxml')
-
     if len(soup.find_all("table", class_='table-bordered')) == 1:
         soup_table = soup.find_all("table", class_='table-bordered')[0]
         if soup_table.find_all('tr')[0].text.strip().split("\n") == \
@@ -65,3 +63,37 @@ def scrape_aqi(city='', month=''):
 
     else:
         logger.error("Table not found! City:{}, Month:{}.".format(city, month))
+
+
+def scrape_aqi_new(city='', month_list=None):
+
+    url = "https://www.aqistudy.cn/historydata/daydata.php"
+    sess = requests.Session()
+    #s.params.update({'city': city})
+    city_db = get_city(city)
+
+    for month in month_list:
+        page = sess.get(url, params={'city': city, 'month': month}, timeout=30)
+
+        soup = BeautifulSoup(page.text, 'lxml')
+        if len(soup.find_all("table", class_='table-bordered')) == 1:
+            soup_table = soup.find_all("table", class_='table-bordered')[0]
+            if soup_table.find_all('tr')[0].text.strip().split("\n") == \
+                    ORIG_AQI_SCHEMA_LIST and (len(soup_table.find_all('tr')) > 1):
+                for entry in soup_table.find_all('tr')[1:]:
+                    values = [i.text.strip() for i in entry.find_all('td')]
+                    if len(values) == len(AQI_SCHEMA_LIST):
+                        dict_aqi = dict(zip(AQI_SCHEMA_LIST, values))
+                        dict_aqi = proc_range(dict_aqi)
+                        dict_aqi['city'] = city_db
+                        add_aqi(**dict_aqi)
+                        logger.debug("Entry for {} added.".format({'city': city, 'month': month}))
+                    else:
+                        logger.error(
+                            "{} can't map to AQI_SCHEMA_LIST".format(values))
+            else:
+                logger.error(
+                    "ORIG_AQI_SCHEMA_LIST not found! City:{}, Month:{}.".format(city, month))
+
+        else:
+            logger.error("Table not found! City:{}, Month:{}.".format(city, month))

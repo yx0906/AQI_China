@@ -35,7 +35,7 @@ class AQI(db.Entity):
     ranking = Required(int)
     city = Required(City)
 
-db.bind("sqlite", 'database_aqi.sqlite', create_db=True)
+db.bind("sqlite", '../data/database_aqi.sqlite', create_db=True)
 db.generate_mapping(create_tables=True)
 
 
