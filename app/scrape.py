@@ -31,7 +31,7 @@ def proc_range(dict_aqi):
         dict_aqi['severitylevel'] = SEVERITY_LV_MAPPING.get(level)
     else:
         logger.warning(
-            'Unknown severitylevel {} in {}'.format(level, dict_aqi))
+            'Unknown severitylevel %s in %s', level, dict_aqi)
         dict_aqi['severitylevel'] = 0
     return dict_aqi
 
@@ -53,16 +53,16 @@ def scrape_aqi(city='', month=''):
                     dict_aqi = proc_range(dict_aqi)
                     dict_aqi['city'] = get_city(city)
                     add_aqi(**dict_aqi)
-                    logger.debug("Entry for {} added.".format(payload))
+                    logger.debug("Entry for %s added.", payload)
                 else:
                     logger.error(
-                        "{} can't map to AQI_SCHEMA_LIST".format(values))
+                        "%s can't map to AQI_SCHEMA_LIST", values)
         else:
             logger.error(
-                "ORIG_AQI_SCHEMA_LIST not found! City:{}, Month:{}.".format(city, month))
+                "ORIG_AQI_SCHEMA_LIST not found! City:%s, Month:%s.", city, month)
 
     else:
-        logger.error("Table not found! City:{}, Month:{}.".format(city, month))
+        logger.error("Table not found! City:%s, Month:%s.", city, month)
 
 
 def scrape_aqi_new(city='', month_list=None):
@@ -87,13 +87,13 @@ def scrape_aqi_new(city='', month_list=None):
                         dict_aqi = proc_range(dict_aqi)
                         dict_aqi['city'] = city_db
                         add_aqi(**dict_aqi)
-                        logger.debug("Entry for {} added.".format({'city': city, 'month': month}))
+                        logger.debug("Entry for %s added.", {'city': city, 'month': month})
                     else:
                         logger.error(
-                            "{} can't map to AQI_SCHEMA_LIST".format(values))
+                            "%s can't map to AQI_SCHEMA_LIST", values)
             else:
                 logger.error(
-                    "ORIG_AQI_SCHEMA_LIST not found! City:{}, Month:{}.".format(city, month))
+                    "ORIG_AQI_SCHEMA_LIST not found! City:%s, Month:%s.", city, month)
 
         else:
-            logger.error("Table not found! City:{}, Month:{}.".format(city, month))
+            logger.error("Table not found! City:%s, Month:%s.", city, month)
