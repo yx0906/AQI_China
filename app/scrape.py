@@ -36,24 +36,30 @@ def proc_range(dict_aqi):
     return dict_aqi
 
 
-def scrape_aqi(city='', month=''):
+def scrape(city='', month=''):
 
     url = "https://www.aqistudy.cn/historydata/daydata.php"
     payload = {'city': city, 'month': month}
     page = requests.get(url, params=payload)
-    soup = BeautifulSoup(page.text, 'lxml')
+    return page.text
+
+
+def parse(content, city='', month=''):
+
+    soup = BeautifulSoup(content, 'lxml')
     if len(soup.find_all("table", class_='table-bordered')) == 1:
         soup_table = soup.find_all("table", class_='table-bordered')[0]
         if soup_table.find_all('tr')[0].text.strip().split("\n") == \
                 ORIG_AQI_SCHEMA_LIST and (len(soup_table.find_all('tr')) > 1):
+            db_city = get_city(city)
             for entry in soup_table.find_all('tr')[1:]:
                 values = [i.text.strip() for i in entry.find_all('td')]
                 if len(values) == len(AQI_SCHEMA_LIST):
                     dict_aqi = dict(zip(AQI_SCHEMA_LIST, values))
                     dict_aqi = proc_range(dict_aqi)
-                    dict_aqi['city'] = get_city(city)
+                    dict_aqi['city'] = db_city
                     add_aqi(**dict_aqi)
-                    logger.debug("Entry for %s added.", payload)
+                    logger.debug("Entry for %s added.", {'city': city, 'month': month})
                 else:
                     logger.error(
                         "%s can't map to AQI_SCHEMA_LIST", values)
@@ -63,6 +69,10 @@ def scrape_aqi(city='', month=''):
 
     else:
         logger.error("Table not found! City:%s, Month:%s.", city, month)
+
+def scrape_parse(city='', month=''):
+    content = scrape(city, month)
+    parse(content, city, month)
 
 
 def scrape_aqi_new(city='', month_list=None):

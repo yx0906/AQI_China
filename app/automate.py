@@ -3,7 +3,7 @@
 
 import logging
 from .data import add_city
-from .scrape import scrape_aqi, scrape_aqi_new
+from .scrape import scrape_parse, scrape_aqi_new
 import time
 
 
@@ -66,12 +66,13 @@ def gen_year_month():
 def collect_one_city(city):
 
     for month in gen_year_month():
-        scrape_aqi(city=city, month=month)
+        scrape_parse(city=city, month=month)
+
 
 def collect_one_city_new(city):
 
     scrape_aqi_new(city, gen_year_month())
-    
+
 
 def collect_all():
 
