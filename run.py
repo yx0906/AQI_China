@@ -19,7 +19,7 @@ def main(city, month, allcities, allmonths):
         raise NotImplementedError
     elif allmonths:
         for c in city:
-            automate.collect_one_city(c)
+            automate.collect_one_city_async(c)
     else:
         for c in city:
             for m in month:

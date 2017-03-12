@@ -5,6 +5,9 @@ import logging
 from bs4 import BeautifulSoup
 import requests
 from .data import add_aqi, get_city
+import asyncio
+import aiohttp
+
 
 logger = logging.getLogger(__name__)
 ORIG_AQI_SCHEMA_LIST = ['日期', 'AQI', '范围', '质量等级',
@@ -44,6 +47,8 @@ def scrape(city='', month=''):
     return page.text
 
 
+
+
 def parse(content, city='', month=''):
 
     soup = BeautifulSoup(content, 'lxml')
@@ -59,16 +64,26 @@ def parse(content, city='', month=''):
                     dict_aqi = proc_range(dict_aqi)
                     dict_aqi['city'] = db_city
                     add_aqi(**dict_aqi)
-                    logger.debug("Entry for %s added.", {'city': city, 'month': month})
                 else:
                     logger.error(
                         "%s can't map to AQI_SCHEMA_LIST", values)
+            logger.info("Entry for %s added.", {'city': city, 'month': month})
         else:
             logger.error(
                 "ORIG_AQI_SCHEMA_LIST not found! City:%s, Month:%s.", city, month)
 
     else:
         logger.error("Table not found! City:%s, Month:%s.", city, month)
+
+
+async def async_scrape_parse(city='', month=''):
+
+    url = "https://www.aqistudy.cn/historydata/daydata.php"
+    payload = {'city': city, 'month': month}
+    async with aiohttp.ClientSession() as session:
+        async with session.get(url, params=payload) as resp:
+            content = await resp.text()
+    parse(content, city, month)
 
 def scrape_parse(city='', month=''):
     content = scrape(city, month)

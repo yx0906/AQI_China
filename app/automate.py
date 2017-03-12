@@ -3,8 +3,9 @@
 
 import logging
 from .data import add_city
-from .scrape import scrape_parse, scrape_aqi_new
+from .scrape import scrape_parse, scrape_aqi_new, async_scrape_parse
 import time
+import asyncio
 
 
 logger = logging.getLogger(__name__)
@@ -78,3 +79,13 @@ def collect_all():
 
     for city in dbcity_init():
         collect_one_city(city)
+
+def collect_one_city_async(city):
+
+    logger.info("start to collect %s", city)
+    loop = asyncio.get_event_loop()
+    loop.run_until_complete(
+        asyncio.gather(
+            *(async_scrape_parse(city, m) for m in gen_year_month())
+        )
+    )
