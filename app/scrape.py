@@ -4,9 +4,8 @@
 import logging
 from bs4 import BeautifulSoup
 import requests
-from .data import add_aqi, get_city
-import asyncio
 import aiohttp
+from .data import add_aqi, get_city
 
 
 logger = logging.getLogger(__name__)
