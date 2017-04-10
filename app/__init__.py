@@ -2,12 +2,19 @@
 # -*- coding: utf-8 -*-
 
 import logging
+import os
 # try:  # Python 2.7+
 #     from logging import NullHandler
 # except ImportError:
 #     class NullHandler(logging.Handler):
 #         def emit(self, record):
 #             pass
+
+
+if 'log' not in os.listdir():
+    os.mkdir("log")
+if 'data' not in os.listdir():
+    os.mkdir("data")
 
 #logger = logging.getLogger(__name__).addHandler(NullHandler())
 logger = logging.getLogger(__name__)
